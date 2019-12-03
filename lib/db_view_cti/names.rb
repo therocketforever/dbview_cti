@@ -6,7 +6,18 @@ module DBViewCTI
     end
 
     def self.table_name(klass)
-      ActiveSupport::Inflector.tableize( self.class_name(klass) )
+      candidate = case
+        when klass.is_a?(String)
+          self.class_name(klass.split('::').last)
+
+        when klass.name.include?('::')
+          self.class_name(klass.name.split('::').last)
+
+      else
+        self.class_name(klass)
+      end
+
+      ActiveSupport::Inflector.tableize( candidate )
     end
     
     def self.foreign_key(klass)
